@@ -1,17 +1,10 @@
 const puppeteer = require("puppeteer");
 const chai = require("chai");
 const expect = chai.expect;
-const {
-  Given,
-  When,
-  Then,
-  Before,
-  After,
-  setDefaultTimeout,
-} = require("cucumber");
-const { putText, getText } = require("../../lib/commands.js");
+const { When, Then, Before, After, setDefaultTimeout } = require("cucumber");
+const { clickElement, getText } = require("../../lib/commands.js");
 
-setDefaultTimeout(30000);
+setDefaultTimeout(60000);
 
 Before(async function () {
   const browser = await puppeteer.launch({ headless: false });
@@ -29,12 +22,8 @@ After(async function () {
   }
 });
 
-Given("user is on {string} page", { timeout: 30000 }, async function (string) {
-  return await this.page.goto(`https://qamid.tmweb.ru`);
-});
-
 When(
-  "user sthe user clicks on the next date, and the first available time, selects the first available place, click on Забронировать button",
+  "user clicks on the next date, and the first available time, selects the first available place, click on Забронировать button",
   async function (string) {
     await clickElement(
       this.page,
@@ -45,7 +34,7 @@ When(
 );
 
 Then(
-  "the user sees a page with the results of booking tickets",
+  "the user sees a page with the results of booking tickets {string}",
   async function (string) {
     const actual = await getText(this.page, "h2.ticket__check-title");
     const expected = await string;
