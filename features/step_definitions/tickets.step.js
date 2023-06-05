@@ -1,11 +1,4 @@
-const {
-  Given,
-  When,
-  Then,
-  Before,
-  After,
-  setDefaultTimeout,
-} = require("cucumber");
+const { When, Then, Before, After, setDefaultTimeout } = require("cucumber");
 const puppeteer = require("puppeteer");
 const chai = require("chai");
 const expect = chai.expect;
@@ -18,7 +11,7 @@ Before(async function () {
   const page = await browser.newPage();
   this.browser = browser;
   this.page = page;
-  await this.page.goto("https://qamid.tmweb.ru");
+  await this.page.goto("https://qamid.tmweb.ru/client/index.php");
   await clickElement(this.page, "a:nth-child(3) > span.page-nav__day-week");
   await clickElement(
     this.page,
@@ -46,7 +39,29 @@ When(
 Then(
   "the user sees a page with the results of booking tickets with Row / Chair {string}",
   async function (string) {
-    const actual = await getText(this.page, "h2.ticket__check-title");
+    const actual = await getText(this.page, ".ticket__chairs");
+    const expected = string;
+    expect(actual).contains(expected);
+  }
+);
+
+When(
+  "user clicks on the next date, and the first available time, on {int} row and {int} chair and on {int} row and {int} chair and click on Забронировать button",
+  async function (row1, chair1, row2, chair2) {
+    await clickElement(
+      this.page,
+      `div:nth-child(${row1}) > span:nth-child(${chair1})`,
+      this.page,
+      `div:nth-child(${row2}) > span:nth-child(${chair2})`
+    );
+    return await clickElement(this.page, "button.acceptin-button");
+  }
+);
+
+Then(
+  "the user sees a page with the results of booking tickets with Row / Chair: {string}', function (string)",
+  async function (string) {
+    const actual = await getText(this.page, ".ticket__chairs");
     const expected = string;
     expect(actual).contains(expected);
   }
